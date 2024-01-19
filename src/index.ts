@@ -1,23 +1,8 @@
 import { Elysia, t } from "elysia";
-import { PostDBType, PostType } from "./types";
+import { PostType } from "./types";
 import cors from "@elysiajs/cors";
-// --- PORTS
-const PORT_EVENTBUS = 4005;
-// --- HOSTS
-const HOST_EVENTBUS = "event-bus-srv";
-// --- EVENT-BUS -- URL
-export const URL_EVENTBUS = `http://${HOST_EVENTBUS}:${PORT_EVENTBUS}/events`;
-
-// --- CONSTS
-const DB: PostDBType = {};
-const posts = (): PostType[] => {
-  return Object.entries(DB).map(([k, v]) => ({
-    id: k,
-    title: v.title,
-    content: v.content,
-    comments: v.comments,
-  }));
-};
+import { DB, posts } from "./database";
+import { getURL } from "./utils";
 
 // --- APP-PORT
 const PORT = 4000;
@@ -69,9 +54,10 @@ app
 
 export async function sendPostCreatedEvent({ post }: { post: PostType }) {
   const event = { type: "post.created", data: { post } };
+  const url = getURL();
 
   try {
-    await fetch(URL_EVENTBUS, {
+    await fetch(url, {
       method: "POST",
       body: JSON.stringify(event),
       headers: {
