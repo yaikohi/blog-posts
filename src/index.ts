@@ -3,6 +3,12 @@ import { PostDBType, PostType } from "./types";
 import cors from "@elysiajs/cors";
 // --- POST
 const PORT = 4000;
+
+// --- SERVICE PORTS
+export const PORT_EVENTBUS = 4005;
+// --- SERVICE URLS
+export const URL_EVENTBUS = "event-bus-srv";
+
 // --- CONSTS
 const DB: PostDBType = {};
 const posts = (): PostType[] => {
@@ -21,7 +27,6 @@ app
   .use(cors());
 // --- ROUTES
 app
-  .get("/", () => "Hello Elysia")
   .group("/events", (app) =>
     app
       .post("/", ({ body, set }) => {
@@ -31,7 +36,7 @@ app
   .group("/posts", (app) =>
     app
       .get("/", () => posts)
-      .post("/", async ({ body, set }) => {
+      .post("/create", async ({ body, set }) => {
         const postId = crypto.randomUUID();
         const newPost: PostType = {
           id: postId,
@@ -62,7 +67,7 @@ app
     ));
 
 export async function sendPostCreatedEvent({ post }: { post: PostType }) {
-  const url = `http://localhost:4005/events`;
+  const url = `http://${URL_EVENTBUS}:${PORT_EVENTBUS}/events`;
   const event = { type: "post.created", data: { post } };
 
   try {
