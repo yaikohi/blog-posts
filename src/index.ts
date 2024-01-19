@@ -4,10 +4,12 @@ import cors from "@elysiajs/cors";
 // --- POST
 const PORT = 4000;
 
-// --- SERVICE PORTS
-export const PORT_EVENTBUS = 4005;
-// --- SERVICE URLS
-export const URL_EVENTBUS = "event-bus-srv";
+// --- PORTS
+const PORT_EVENTBUS = 4005;
+// --- HOSTS
+const HOST_EVENTBUS = "event-bus-srv";
+// --- EVENT-BUS -- URL
+export const url = `http://${HOST_EVENTBUS}:${PORT_EVENTBUS}/events`;
 
 // --- CONSTS
 const DB: PostDBType = {};
@@ -67,7 +69,7 @@ app
     ));
 
 export async function sendPostCreatedEvent({ post }: { post: PostType }) {
-  const url = `http://${URL_EVENTBUS}:${PORT_EVENTBUS}/events`;
+  const url = `http://${HOST_EVENTBUS}:${PORT_EVENTBUS}/events`;
   const event = { type: "post.created", data: { post } };
 
   try {
