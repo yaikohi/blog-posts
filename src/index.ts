@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { PostType } from "./types";
 import cors from "@elysiajs/cors";
-import { DB, posts } from "./database";
+// import { DB, posts } from "./database";
 import { getURL } from "./utils";
 
 // --- APP-PORT
@@ -21,7 +21,7 @@ app
       }))
   .group("/posts", (app) =>
     app
-      .get("/", () => posts)
+      // .get("/", () => posts)
       .post("/create", async ({ body, set }) => {
         const postId = crypto.randomUUID();
         const newPost: PostType = {
@@ -31,7 +31,7 @@ app
           comments: [],
         };
 
-        DB[postId] = newPost;
+        // DB[postId] = newPost;
 
         await sendPostCreatedEvent({ post: newPost });
 
@@ -57,6 +57,7 @@ export async function sendPostCreatedEvent({ post }: { post: PostType }) {
   const url = getURL();
 
   try {
+    console.log(`Sending post.created to event-bus.`);
     await fetch(url, {
       method: "POST",
       body: JSON.stringify(event),
@@ -64,6 +65,8 @@ export async function sendPostCreatedEvent({ post }: { post: PostType }) {
         "Content-Type": "application/json",
       },
     });
+
+    console.log(`Finished sending post.created to event-bus.`);
   } catch (err) {
     console.error(err);
   }
